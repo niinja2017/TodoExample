@@ -1,11 +1,11 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import TodoList from "./TodoList"
 import { v4 as uuidv4 } from 'uuid';
 import AddTodo from "./AddTodo";
 
 const Todo = () => {
 
-    const [list, setList] = useState([
+    const [list, setList] = useState(JSON.parse(localStorage.getItem('list')) || [
         {
             id: uuidv4(),
             title: 'TailwindCss One',
@@ -70,6 +70,10 @@ const Todo = () => {
         console.log(newStatus)
         setList(newStatus)
     }
+
+    useEffect(() => {
+        localStorage.setItem('list', JSON.stringify(list))
+    }, [list])
 
     return (
         <>
