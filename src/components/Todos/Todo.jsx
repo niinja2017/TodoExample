@@ -1,79 +1,97 @@
 import { useEffect, useState } from "react"
 import TodoList from "./TodoList"
-import { v4 as uuidv4 } from 'uuid';
 import AddTodo from "./AddTodo";
+import axios from "axios";
 
 const Todo = () => {
 
-    const [list, setList] = useState(JSON.parse(localStorage.getItem('list')) || [
-        {
-            id: uuidv4(),
-            title: 'TailwindCss One',
-            status: false
-        },
-        {
-            id: uuidv4(),
-            title: 'TailwindCss Two',
-            status: false
-        },
-        {
-            id: uuidv4(),
-            title: 'TailwindCss Three',
-            status: false
-        }
-    ])
+    const [list, setList] = useState([])
 
     const [newTitle, setNewTitle] = useState('')
-
-    // دیلیت Todo
-    const todoHandleDelete = (id) => {
-        let deleteTodo = list.filter(item => item.id !== id)
-        setList(deleteTodo)
-    }
 
     // اضافه کردن Todo
     const todoHandleAdd = (e) => {
         setNewTitle(e.target.value)
     }
 
-    const addTodo = (e) => {
-        if (e.key == "Enter" && newTitle.trim().length > 0) {
-            setList([
-                ...list,
-                {
-                    id: uuidv4(),
+    const addTodo = async (e) => {
+        try {
+            if (e.key == "Enter" && newTitle.trim().length > 0) {
+                let data = {
                     title: newTitle.trim(),
                     status: false
                 }
-            ])
-            setNewTitle('')
+                const res = await axios.post('https://6a8eb04ea12b7de8cc0edfbd.mockapi.io/TodoExample', data)
+
+                setList([
+                    ...list,
+                    res.data
+                ])
+                setNewTitle('')
+            }
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    // دیلیت Todo
+    const todoHandleDelete = async (id) => {
+        try {
+            await axios.delete(`https://6a8eb04ea12b7de8cc0edfbd.mockapi.io/TodoExample/${id}`)
+            setList(prev => prev.filter(item => item.id !== id))
+        } catch (error) {
+            console.log(error)
         }
     }
 
     // ویرایش Todo
-    const editTodo = (id, newTitle) => {
-        let editTodo = list.map(item =>
-            item.id === id
-                ? { ...item, title: newTitle }
-                : item
-        )
-        setList(editTodo)
+    const editTodo = async (id, newTitle) => {
+        try {
+            await axios.put(`https://6a8eb04ea12b7de8cc0edfbd.mockapi.io/TodoExample/${id}`, { title: newTitle })
+            setList(prev =>
+                prev.map(item =>
+                    item.id === id
+                        ? newTodo
+                        : item
+                )
+            )
+        } catch (error) {
+            console.log(error)
+        }
     }
 
     // وضعیت Todo
-    const statusHandle = (id) => {
-        let newStatus = list.map(item => {
-            return item.id === id
-                ? { ...item, status: !item.status }
-                : item
-        })
-        console.log(newStatus)
-        setList(newStatus)
+    const statusHandle = async (id) => {
+        try {
+            const currentTodo = list.find(item => item.id === id)
+
+            const newStatus = !currentTodo.status
+
+            await axios.put(
+                `https://6a8eb04ea12b7de8cc0edfbd.mockapi.io/TodoExample/${id}`, { status: newStatus })
+            setList(prev =>
+                prev.map(item =>
+                    item.id === id
+                        ? { ...item, status: newStatus }
+                        : item
+                )
+            )
+        } catch (error) {
+            console.log(error)
+        }
     }
 
+    const getData = async () => {
+        try {
+            const res = await axios.get('https://6a8eb04ea12b7de8cc0edfbd.mockapi.io/TodoExample')
+            setList(res.data)
+        } catch (error) {
+            console.log(error)
+        }
+    }
     useEffect(() => {
-        localStorage.setItem('list', JSON.stringify(list))
-    }, [list])
+        getData()
+    }, [])
 
     return (
         <>
