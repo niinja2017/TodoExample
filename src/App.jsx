@@ -1,9 +1,15 @@
+import { ToastContainer } from "react-toastify"
 import Todo from "./components/Todos/Todo"
+import Card from "./components/Cart/Card"
+import Cart from "./components/Cart/Cart"
 
 function App() {
     return (
         <>
-            <Todo />
+            <Card/>
+            <Cart/>
+            {/* <Todo /> */}
+            <ToastContainer />
         </>
     )
 }

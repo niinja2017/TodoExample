@@ -1,9 +1,11 @@
-import { useState } from "react"
+import { useContext, useState } from "react"
 import Delete from "../../svg/Delete"
 import Edit from "../../svg/Edit"
+import { TodoContext } from "../../contexts/TodoContext"
 
-const TodoItem = ({ title, id, status, handleDelete, editTodo , statusHandle}) => {
+const TodoItem = ({ title, id, status}) => {
 
+    const {todoHandleDelete , editTodo , statusHandle} = useContext(TodoContext)
     const [isEditing, setIsEditing] = useState(false)
     const [editTitle, setEditTitle] = useState(title)
 
@@ -49,7 +51,7 @@ const TodoItem = ({ title, id, status, handleDelete, editTodo , statusHandle}) =
                             <span onClick={() => setIsEditing(true)}>
                                 <Edit />
                             </span>
-                            <span onClick={() => handleDelete(id)}>
+                            <span onClick={() => todoHandleDelete(id)}>
                                 <Delete />
                             </span>
 
